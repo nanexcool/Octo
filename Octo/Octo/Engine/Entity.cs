@@ -25,14 +25,15 @@ namespace Octo.Engine
             get { return new Rectangle((int)position.X, (int)position.Y, Width, Height); }
         }
 
-        protected bool OnGround = false;
+        public bool OnGround = false;
+        public bool IsJumping = false;
 
         protected Vector2 position;
         protected Vector2 oldVelocity;
         protected Vector2 velocity;
         protected Vector2 acceleration;
 
-        protected Vector2 gravity = new Vector2(0, 500);
+        protected Vector2 gravity = new Vector2(0, 1000);
         
         protected float friction = 0.9f;
 
@@ -50,9 +51,6 @@ namespace Octo.Engine
 
             Width = 32;
             Height = 64;
-
-            acceleration = new Vector2(0, 0);
-            velocity = new Vector2(300, -240);
         }
 
         public virtual void Update(float elapsed)
@@ -73,6 +71,14 @@ namespace Octo.Engine
             spriteBatch.DrawString(Util.Font, sb, position, Color.Black);
         }
 
+        public void Jump()
+        {
+            if (OnGround)
+            {
+                IsJumping = true;
+            }
+        }
+
         private void DoPhysics(float elapsed)
         {
             // Keep old velocity for Vertlet integration
@@ -81,10 +87,23 @@ namespace Octo.Engine
             // Add acceleration to velocity
             velocity += (acceleration + gravity) * elapsed;
 
+            velocity = Vector2.Clamp(velocity, new Vector2(-200, -1000), new Vector2(200, 1000));
+
+            if (IsJumping && OnGround)
+            {
+                velocity.Y -= 600;
+                OnGround = false;
+            }
             // Add integrated velocity to position
             position += (velocity + oldVelocity) * 0.5f * elapsed;
+            
+            if (acceleration.X == 0 && OnGround)
+            {
+                velocity.X *= 1 - elapsed / 0.3f;
+            }
 
-            if (Math.Abs(velocity.X) < 0.2f)
+
+            if (Math.Abs(velocity.X) < 0.5f)
             {
                 velocity.X = 0;
             }
@@ -99,6 +118,8 @@ namespace Octo.Engine
             if (position.Y == 480 - Height)
             {
                 OnGround = true;
+                IsJumping = false;
+                velocity.Y = 0;
             }
 
             //// If entity is out of bounds, reverse velocity

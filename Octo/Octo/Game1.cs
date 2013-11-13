@@ -21,6 +21,9 @@ namespace Octo
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        KeyboardState state;
+        KeyboardState oldState;
+
         Room room;
 
         public Game1()
@@ -28,8 +31,8 @@ namespace Octo
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            //IsFixedTimeStep = false;
-            //graphics.SynchronizeWithVerticalRetrace = false;
+            IsFixedTimeStep = false;
+            graphics.SynchronizeWithVerticalRetrace = false;
         }
 
         /// <summary>
@@ -76,8 +79,9 @@ namespace Octo
         protected override void Update(GameTime gameTime)
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            
-            KeyboardState state = Keyboard.GetState();
+
+            oldState = state;
+            state = Keyboard.GetState();
             
             if (state.IsKeyDown(Keys.Escape))
                 this.Exit();
@@ -85,11 +89,15 @@ namespace Octo
             Vector2 a = Vector2.Zero;
             if (state.IsKeyDown(Keys.A))
             {
-                a.X = -100;
+                a.X = -400;
             }
             if (state.IsKeyDown(Keys.E))
             {
-                a.X = 100;
+                a.X = 400;
+            }
+            if (state.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+            {
+                room.Player.Jump();
             }
             room.Player.Acceleration = a;
             
