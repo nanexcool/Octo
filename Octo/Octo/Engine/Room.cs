@@ -22,21 +22,8 @@ namespace Octo.Engine
             Height = height;
 
             Entities = new List<Entity>();
-
-            CreateTestEntity();
         }
-
-        private void CreateTestEntity()
-        {
-            Entity e = new Entity()
-            {
-                Color = Color.Brown
-            };
-            e.Position = new Vector2(0, 50);
-            Entities.Add(e);
-            Player = e;
-        }
-
+        
         public virtual void Update(float elapsed)
         {
             for (int i = 0; i < Entities.Count; i++)

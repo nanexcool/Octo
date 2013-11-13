@@ -43,6 +43,14 @@ namespace Octo.Engine
             set { acceleration = value; }
         }
 
+        public Rectangle CollisionBox
+        {
+            get
+            {
+                return new Rectangle((int)Position.X + 25, (int)Position.Y + 10, Width - 50, Height - 20);
+            }
+        }
+
         public Entity()
         {
             Texture = Util.Texture;
@@ -64,6 +72,8 @@ namespace Octo.Engine
         {
             spriteBatch.Draw(Texture, DrawRect, Color);
 
+            spriteBatch.Draw(Util.Texture, CollisionBox, Color.Red * 0.5f);
+
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(position.ToString());
             sb.AppendLine(velocity.ToString());
@@ -79,6 +89,11 @@ namespace Octo.Engine
             }
         }
 
+        public void Move(Vector2 d)
+        {
+            acceleration = d * 400;
+        }
+
         private void DoPhysics(float elapsed)
         {
             // Keep old velocity for Vertlet integration
@@ -87,7 +102,7 @@ namespace Octo.Engine
             // Add acceleration to velocity
             velocity += (acceleration + gravity) * elapsed;
 
-            velocity = Vector2.Clamp(velocity, new Vector2(-200, -1000), new Vector2(200, 1000));
+            velocity = Vector2.Clamp(velocity, new Vector2(-300, -1000), new Vector2(300, 1000));
 
             if (IsJumping && OnGround)
             {
@@ -99,7 +114,7 @@ namespace Octo.Engine
             
             if (acceleration.X == 0 && OnGround)
             {
-                velocity.X *= 1 - elapsed / 0.3f;
+                velocity.X *= 1 - elapsed / 0.1f;
             }
 
 

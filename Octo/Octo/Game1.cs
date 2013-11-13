@@ -24,7 +24,10 @@ namespace Octo
         KeyboardState state;
         KeyboardState oldState;
 
+        bool paused = false;
+
         Room room;
+        Entity player;
 
         public Game1()
         {
@@ -46,6 +49,16 @@ namespace Octo
             Util.Initialize(this);
 
             room = new Room(24, 14);
+
+            player = new Entity()
+            {
+                Texture = Content.Load<Texture2D>("Octocat")
+            };
+
+            player.Width = player.Texture.Width;
+            player.Height = player.Texture.Height;
+
+            room.Entities.Add(player);
 
             base.Initialize();
         }
@@ -85,23 +98,32 @@ namespace Octo
             
             if (state.IsKeyDown(Keys.Escape))
                 this.Exit();
-            
-            Vector2 a = Vector2.Zero;
-            if (state.IsKeyDown(Keys.A))
+
+            if (state.IsKeyDown(Keys.P) && oldState.IsKeyUp(Keys.P))
             {
-                a.X = -400;
+                paused = !paused;
             }
-            if (state.IsKeyDown(Keys.E))
+
+            if (!paused)
             {
-                a.X = 400;
+                Vector2 d = Vector2.Zero;
+                if (state.IsKeyDown(Keys.A))
+                {
+                    d.X = -1;
+                }
+                if (state.IsKeyDown(Keys.E))
+                {
+                    d.X = 1;
+                }
+                if (state.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+                {
+                    player.Jump();
+                }
+
+                player.Move(d);
+
+                room.Update(elapsed);
             }
-            if (state.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
-            {
-                room.Player.Jump();
-            }
-            room.Player.Acceleration = a;
-            
-            room.Update(elapsed);
 
             base.Update(gameTime);
         }
