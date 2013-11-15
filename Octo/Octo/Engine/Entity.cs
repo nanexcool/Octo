@@ -117,6 +117,11 @@ namespace Octo.Engine
                 velocity.Y = 0;
             }
 
+            if (CollisionBox.Right >= 800)
+            {
+                velocity.X = 0;
+            }
+
             // Add integrated velocity to position
             position += (velocity + oldVelocity) * 0.5f * elapsed;
             
@@ -126,8 +131,7 @@ namespace Octo.Engine
                 velocity.X *= 1 - elapsed / 0.1f;
             }
 
-
-            if (Math.Abs(velocity.X) < 0.5f)
+            if (Math.Abs(velocity.X) < 0.2f)
             {
                 velocity.X = 0;
             }
@@ -136,7 +140,7 @@ namespace Octo.Engine
                 velocity.Y = 0;
             }
             
-            if (CollisionBox.Bottom >= 480)
+            if (CollisionBox.Bottom >= 450)
             {
                 OnGround = true;
                 IsJumping = false;
