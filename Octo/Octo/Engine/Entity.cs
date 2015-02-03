@@ -103,6 +103,7 @@ namespace Octo.Engine
             
             // Add acceleration to velocity
             velocity += (acceleration + gravity) * elapsed;
+            //velocity = (0.5f * (acceleration + gravity) * elapsed * elapsed) + (velocity * elapsed);
 
             velocity = Vector2.Clamp(velocity, new Vector2(-300, -1000), new Vector2(300, 1000));
 
@@ -119,12 +120,11 @@ namespace Octo.Engine
 
             if (CollisionBox.Right >= 800)
             {
-                velocity.X = 0;
+                //velocity.X = 0;
             }
 
             // Add integrated velocity to position
             position += (velocity + oldVelocity) * 0.5f * elapsed;
-            
             // Ground friction
             if (acceleration.X == 0 && OnGround)
             {

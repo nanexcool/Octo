@@ -125,6 +125,13 @@ namespace Octo
                 room.Update(elapsed);
             }
 
+            if (state.IsKeyDown(Keys.LeftControl) && oldState.IsKeyUp(Keys.LeftControl))
+            {
+                IsFixedTimeStep = !IsFixedTimeStep;
+                graphics.SynchronizeWithVerticalRetrace = !graphics.SynchronizeWithVerticalRetrace;
+                graphics.ApplyChanges();
+            }
+
             base.Update(gameTime);
         }
         
