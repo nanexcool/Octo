@@ -75,9 +75,11 @@ namespace Octo.Engine
             spriteBatch.Draw(Util.Texture, CollisionBox, Color.Red * 0.5f);
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(position.ToString());
+            sb.AppendLine(DrawRect.ToString());
+            sb.AppendLine(CollisionBox.ToString());
             sb.AppendLine(velocity.ToString());
             sb.AppendLine(acceleration.ToString());
+            sb.AppendLine("OnGround:" + OnGround.ToString() + " Jumping:" + IsJumping.ToString());
             spriteBatch.DrawString(Util.Font, sb, position, Color.Black);
         }
 
@@ -101,6 +103,7 @@ namespace Octo.Engine
             
             // Add acceleration to velocity
             velocity += (acceleration + gravity) * elapsed;
+            //velocity = (0.5f * (acceleration + gravity) * elapsed * elapsed) + (velocity * elapsed);
 
             velocity = Vector2.Clamp(velocity, new Vector2(-300, -1000), new Vector2(300, 1000));
 
@@ -109,16 +112,26 @@ namespace Octo.Engine
                 velocity.Y -= 600;
                 OnGround = false;
             }
+
+            if (OnGround)
+            {
+                velocity.Y = 0;
+            }
+
+            if (CollisionBox.Right >= 800)
+            {
+                //velocity.X = 0;
+            }
+
             // Add integrated velocity to position
             position += (velocity + oldVelocity) * 0.5f * elapsed;
-            
+            // Ground friction
             if (acceleration.X == 0 && OnGround)
             {
                 velocity.X *= 1 - elapsed / 0.1f;
             }
 
-
-            if (Math.Abs(velocity.X) < 0.5f)
+            if (Math.Abs(velocity.X) < 0.2f)
             {
                 velocity.X = 0;
             }
@@ -126,26 +139,13 @@ namespace Octo.Engine
             {
                 velocity.Y = 0;
             }
-
-            position.X = MathHelper.Clamp(position.X, 0, 800 - Width);
-            position.Y = MathHelper.Clamp(position.Y, 0, 480 - Height);
-
-            if (position.Y == 480 - Height)
+            
+            if (CollisionBox.Bottom >= 450)
             {
                 OnGround = true;
                 IsJumping = false;
                 velocity.Y = 0;
             }
-
-            //// If entity is out of bounds, reverse velocity
-            //if (position.X <= 0 || position.X >= 800 - Width)
-            //{
-            //    velocity.X *= -1;
-            //}
-            //if (position.Y <= 0 || position.Y >= 480 - Height)
-            //{
-            //    velocity.Y *= -1;
-            //}
         }
     }
 }
